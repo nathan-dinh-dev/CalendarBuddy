@@ -44,7 +44,7 @@ public class MyCalendar {
 					LocalDate endDate = LocalDate.parse(endDateStr, DateTimeFormatter.ofPattern("M/d/yy"));
 
 					// Create TimeInterval
-					TimeInterval timeInterval = new TimeInterval(startTime, endTime);
+					TimeInterval timeInterval = new TimeInterval(startDate, startTime, endDate, endTime);
 
 					// Parse days (e.g., "TR" -> [TUESDAY, THURSDAY])
 					DayOfWeek[] recurringDays = parseDays(days);
@@ -65,7 +65,7 @@ public class MyCalendar {
 					LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("M/d/yy"));
 
 					// Create TimeInterval
-					TimeInterval timeInterval = new TimeInterval(startTime, endTime);
+					TimeInterval timeInterval = new TimeInterval(date, startTime, date, endTime);
 
 					// Create one-time event
 					Event newEvent = new Event(eventName, timeInterval);
@@ -143,6 +143,84 @@ public class MyCalendar {
 		}
 
 		return eventsOnDate;
+	}
+
+	public void showMonth(LocalDate date) {
+
+		// Get today's date
+		LocalDate today = LocalDate.now();
+
+		// Get the first day of the month and the total number of days in the month
+		LocalDate firstOfMonth = date.withDayOfMonth(1);
+		int monthLength = date.lengthOfMonth();
+
+		// Get the day of the week the month starts on (1 = Monday, 7 = Sunday)
+		int startDayOfWeek = firstOfMonth.getDayOfWeek().getValue();
+
+		System.out.println("      " + date.getMonth().getDisplayName(TextStyle.FULL, Locale.US) + " " + date.getYear());
+		System.out.println("Su Mo Tu We Th Fr Sa");
+
+		// Adjust startDayOfWeek to work with a Sunday-starting week (Sunday = 0)
+		int adjustedStartDayOfWeek = (startDayOfWeek == 7) ? 0 : startDayOfWeek;
+
+		// Print initial spaces for the first week (if the month doesn't start on
+		// Sunday)
+		for (int i = 0; i < adjustedStartDayOfWeek; i++) {
+			System.out.print("   ");
+		}
+
+		// Iterate over the days of the month
+		for (int day = 1; day <= monthLength; day++) {
+			LocalDate currentDate = firstOfMonth.withDayOfMonth(day);
+
+			// Check if there are events on this day and highlight if needed
+			if (today.getDayOfMonth() == day && today.getMonth() == date.getMonth() && hasEventsOnDate(currentDate)) {
+				System.out.printf("[{%2d}] ", day); // Highlight the day with curly braces
+			} else if (today.getDayOfMonth() == day && today.getMonth() == date.getMonth()) {
+				System.out.printf("[%2d] ", day);
+
+			} else if (hasEventsOnDate(currentDate)) {
+				System.out.printf("{%2d} ", day); // Highlight the day with curly braces
+			} else {
+				System.out.printf("%2d ", day); // Print the day normally
+			}
+
+			// Newline after Saturday (if day + adjustedStartDayOfWeek is divisible by 7)
+			if ((day + adjustedStartDayOfWeek) % 7 == 0) {
+				System.out.println();
+			}
+		}
+		System.out.println(); // Final newline after the month
+	}
+
+	private boolean hasEventsOnDate(LocalDate date) {
+		// Check if there are any events scheduled on the given date
+		for (Event event : events) {
+			if (!event.isRecurring() && event.getTimeInterval().getStartDate().equals(date)) {
+				return true; // One-time event matches
+			}
+			if (event.isRecurring()) {
+				// Check if the recurring event occurs on the given date
+				if (isEventOnDate(event, date)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isEventOnDate(Event event, LocalDate date) {
+		// Check if the given date falls within the recurring event's range
+		if (!date.isBefore(event.getStartDate()) && !date.isAfter(event.getEndDate())) {
+			// Check if the event occurs on the same day of the week
+			DayOfWeek dayOfWeek = date.getDayOfWeek();
+			for (DayOfWeek recurringDay : event.getRecurringDays()) {
+				if (dayOfWeek.equals(recurringDay)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void showAllEvents() {
