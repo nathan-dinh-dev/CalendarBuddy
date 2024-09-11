@@ -7,8 +7,23 @@ import java.util.Locale;
 public class MyCalendarTester {
 
 	public static void main(String[] args) {
+
+		// Display today on calendar view
 		LocalDate today = LocalDate.now();
 		displayMonthCalendar(today);
+
+		// Create calendar instance
+		MyCalendar calendar = new MyCalendar();
+
+		// Load calendar
+		calendar.loadEvents("C:\\Users\\nghia\\git\\CalendarBuddy\\CS151\\src\\calendar\\sample_events.txt");
+
+		// Print out string indicates loading successfully
+		System.out.println("Loading is done!");
+
+		// Print out all events
+//		calendar.showAllEvents();
+
 	}
 
 	public static void displayMonthCalendar(LocalDate today) {
