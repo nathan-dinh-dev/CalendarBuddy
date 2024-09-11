@@ -141,27 +141,28 @@ public class MyCalendarTester {
 
 	private static void createEvent(MyCalendar calendar, Scanner scanner) {
 		try {
-		System.out.println("Enter event name: ");
-		String name = scanner.nextLine();
+			System.out.println("Enter event name: ");
+			String name = scanner.nextLine();
 
-		System.out.println("Enter event date (MM/DD/YYYY): ");
-		String dateStr = scanner.nextLine();
-		LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("M/d/yyyy"));
+			System.out.println("Enter event date (MM/DD/YYYY): ");
+			String dateStr = scanner.nextLine();
+			LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("M/d/yyyy"));
 
-		System.out.println("Enter start time (HH:mm, 24-hour format): ");
-		String startTimeStr = scanner.nextLine();
-		LocalTime startTime = LocalTime.parse(startTimeStr);
+			System.out.println("Enter start time (HH:mm, 24-hour format): ");
+			String startTimeStr = scanner.nextLine();
+			LocalTime startTime = LocalTime.parse(startTimeStr);
 
-		System.out.println("Enter end time (HH:mm, 24-hour format): ");
-		String endTimeStr = scanner.nextLine();
-		LocalTime endTime = LocalTime.parse(endTimeStr);
+			System.out.println("Enter end time (HH:mm, 24-hour format): ");
+			String endTimeStr = scanner.nextLine();
+			LocalTime endTime = LocalTime.parse(endTimeStr);
 
-		TimeInterval timeInterval = new TimeInterval(date, startTime, date, endTime);
-		Event newEvent = new Event(name, timeInterval);
-		calendar.addEvent(newEvent);
-		System.out.println("Event created successfully.");} catch (Exception e) {
-	        System.out.println("Invalid input. Please enter the correct date and time format.");
-	    }
+			TimeInterval timeInterval = new TimeInterval(date, startTime, date, endTime);
+			Event newEvent = new Event(name, timeInterval);
+			calendar.addEvent(newEvent);
+			System.out.println("Event created successfully.");
+		} catch (Exception e) {
+			System.out.println("Invalid input. Please enter the correct date and time format.");
+		}
 	}
 
 	private static void goToOption(MyCalendar calendar, Scanner scanner) {
@@ -169,19 +170,12 @@ public class MyCalendarTester {
 		String dateStr = scanner.nextLine();
 		LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("M/d/yyyy"));
 
-		showDayView(calendar, date, scanner); // Show events on the specified date
+		// Show events on the specified date
+		showDayView(calendar, date, scanner);
 	}
 
 	private static void deleteEvent(MyCalendar calendar, Scanner scanner) {
-		System.out.println("Enter the event name: ");
-		String name = scanner.nextLine();
-
-		System.out.println("Enter the event date (MM/DD/YYYY): ");
-		String dateStr = scanner.nextLine();
-		LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("M/d/yyyy"));
-
-		calendar.deleteEvent(name, date);
-		System.out.println("Event deleted successfully.");
+		calendar.deleteEvent(scanner);
 	}
 
 	public static void displayMonthCalendar(LocalDate today) {

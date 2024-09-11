@@ -8,8 +8,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
 public class MyCalendar {
 	private List<Event> events;
@@ -115,6 +117,111 @@ public class MyCalendar {
 
 	public void deleteEvent(String name, LocalDate date) {
 
+	}
+
+	public void deleteEvent(Scanner scanner) {
+		System.out.println("[S]elected  [A]ll  [Dr]ecurring");
+		String option = scanner.nextLine().trim().toUpperCase();
+
+		switch (option) {
+		case "S":
+			deleteSelectedEvent(scanner);
+			break;
+
+		case "A":
+			deleteAllEventsOnDate(scanner);
+			break;
+		case "DR":
+			deleteRecurringEvent(scanner);
+			break;
+		default:
+			System.out.println("Invalid option.");
+			break;
+		}
+	}
+
+	// 1. Delete a specific one-time event by date and name
+	private void deleteSelectedEvent(Scanner scanner) {
+		System.out.println("Enter the date [MM/DD/YYYY]:");
+		String dateStr = scanner.nextLine();
+		LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("M/d/yyyy"));
+
+		System.out.println("Here are the events scheduled on " + date + ":");
+		List<Event> eventsOnDate = getEventsOnDate(date);
+		if (eventsOnDate.isEmpty()) {
+			System.out.println("No events found on this date.");
+			return;
+		}
+
+		for (Event event : eventsOnDate) {
+			System.out.println(event.getTimeInterval().getStartTime() + " - " + event.getTimeInterval().getEndTime()
+					+ " " + event.getName());
+		}
+
+		System.out.println("Enter the name of the event to delete:");
+		String eventName = scanner.nextLine().trim();
+
+		boolean eventDeleted = false;
+		Iterator<Event> iterator = events.iterator();
+		while (iterator.hasNext()) {
+			Event event = iterator.next();
+			if (!event.isRecurring() && event.getName().equalsIgnoreCase(eventName)
+					&& event.getTimeInterval().getStartDate().equals(date)) {
+				iterator.remove();
+				eventDeleted = true;
+				System.out.println("Event '" + eventName + "' deleted.");
+				break;
+			}
+		}
+
+		if (!eventDeleted) {
+			System.out.println("Event not found.");
+		}
+	}
+
+	// 2. Delete all one-time events on a specific date
+	private void deleteAllEventsOnDate(Scanner scanner) {
+		System.out.println("Enter the date [MM/DD/YYYY]:");
+		String dateStr = scanner.nextLine();
+		LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("M/d/yyyy"));
+
+		boolean eventsDeleted = false;
+		Iterator<Event> iterator = events.iterator();
+		while (iterator.hasNext()) {
+			Event event = iterator.next();
+			if (!event.isRecurring() && event.getTimeInterval().getStartDate().equals(date)) {
+				iterator.remove();
+				eventsDeleted = true;
+			}
+		}
+
+		if (eventsDeleted) {
+			System.out.println("All one-time events on " + date + " deleted.");
+		} else {
+			System.out.println("No one-time events found on this date.");
+		}
+	}
+
+	// 3. Delete a recurring event by name
+	private void deleteRecurringEvent(Scanner scanner) {
+		System.out.println("Enter the name of the recurring event to delete:");
+		String eventName = scanner.nextLine().trim();
+
+		boolean eventDeleted = false;
+		Iterator<Event> iterator = events.iterator();
+		while (iterator.hasNext()) {
+			Event event = iterator.next();
+			if (event.isRecurring() && event.getName().equalsIgnoreCase(eventName)) {
+				iterator.remove();
+				eventDeleted = true;
+				System.out.println("Recurring event '" + eventName + "' deleted.");
+				break;
+			}
+		}
+
+		if (!eventDeleted) {
+			System.out.println("Recurring event not found.");
+		}
 	}
 
 	public List<Event> getEventsOnDate(LocalDate date) {
