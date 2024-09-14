@@ -8,8 +8,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
+/**
+ * MyCalendarTester is the main class for interacting with the calendar
+ * application. This is user UI to viewing, creating new events, deleting
+ * events, and navigating.
+ * 
+ * Programmed by: Nathan Dinh
+ * 
+ * Date: 09/13/2024
+ */
+
 public class MyCalendarTester {
 
+	/**
+	 * Starting point of the application.
+	 * 
+	 * Displays the current month, loads events, and processes user input through
+	 * console.
+	 * 
+	 * @param args command line arguments
+	 */
 	public static void main(String[] args) {
 
 		// Display today on calendar view
@@ -26,9 +44,10 @@ public class MyCalendarTester {
 		System.out.println("\nLoading is done!\n");
 
 		// Print out all events
-//		calendar.showAllEvents();
+		// Optional: Uncomment this to show all events
+		// calendar.showAllEvents();
 
-		// Boolean value
+		// Boolean value to run the main menu loop
 		boolean isRunning = true;
 		Scanner scanner = new Scanner(System.in);
 
@@ -67,11 +86,20 @@ public class MyCalendarTester {
 
 	}
 
+	/**
+	 * Displays the main menu options for the user to choose from.
+	 */
 	private static void showMainMenu() {
 		System.out.println("Select one of the following main menu options:");
 		System.out.println("[V]iew by  [C]reate  [G]o to  [E]vent list  [D]elete  [Q]uit");
 	}
 
+	/**
+	 * View By option, allowing the user to select a day or month view.
+	 * 
+	 * @param calendar: MyCalendar instance
+	 * @param scanner:  Scanner for user input
+	 */
 	private static void viewByOption(MyCalendar calendar, Scanner scanner) {
 		System.out.println("[D]ay view or [M]onth view ?");
 		String input = scanner.nextLine().trim().toUpperCase();
@@ -89,6 +117,13 @@ public class MyCalendarTester {
 		}
 	}
 
+	/**
+	 * Day view for a specified date, showing all events scheduled for that day.
+	 * 
+	 * @param calendar: MyCalendar instance
+	 * @param datet:    date to display events
+	 * @param scanner:  Scanner for user input
+	 */
 	private static void showDayView(MyCalendar calendar, LocalDate date, Scanner scanner) {
 		System.out.println("Day View for " + date);
 		List<Event> events = calendar.getEventsOnDate(date);
@@ -103,13 +138,28 @@ public class MyCalendarTester {
 		handleDayNavigation(calendar, date, scanner);
 	}
 
+	/**
+	 * Month view for a specified date, highlighting days with events.
+	 * 
+	 * @param calendar: MyCalendar instance
+	 * @param date:     date of the month to display
+	 * @param scanner:  Scanner for user input
+	 */
 	private static void showMonthView(MyCalendar calendar, LocalDate date, Scanner scanner) {
 		System.out.println("Month View for " + date.getMonth() + " " + date.getYear());
-		calendar.showMonth(date); // Implement this method to display the month and highlight event days
+		calendar.showMonth(date);
 
 		handleMonthNavigation(calendar, date, scanner);
 	}
 
+	/**
+	 * Handles navigation in the Month view, allowing the user to move to the
+	 * previous or next month.
+	 * 
+	 * @param calendar: MyCalendar instance
+	 * @param date:     date currently displayed in the month view
+	 * @param scanner:  Scanner for user input
+	 */
 	private static void handleMonthNavigation(MyCalendar calendar, LocalDate date, Scanner scanner) {
 		System.out.println("[P]revious or [N]ext or [G]o back to main menu ?");
 		String input = scanner.nextLine().trim().toUpperCase();
@@ -125,6 +175,14 @@ public class MyCalendarTester {
 		}
 	}
 
+	/**
+	 * Navigation in the Day view, allowing the user to move to the previous or next
+	 * day.
+	 * 
+	 * @param calendar: MyCalendar instance
+	 * @param date:     date currently displayed in the day view
+	 * @param scanner:  Scanner for user input
+	 */
 	private static void handleDayNavigation(MyCalendar calendar, LocalDate date, Scanner scanner) {
 		System.out.println("[P]revious or [N]ext or [G]o back to the main menu ?");
 		String input = scanner.nextLine().trim().toUpperCase();
@@ -140,6 +198,12 @@ public class MyCalendarTester {
 		}
 	}
 
+	/**
+	 * Prompts the user to create a new event.
+	 * 
+	 * @param calendar: MyCalendar instance
+	 * @param scanner:  Scanner for user input
+	 */
 	private static void createEvent(MyCalendar calendar, Scanner scanner) {
 		try {
 			System.out.println("Enter event name: ");
@@ -166,6 +230,12 @@ public class MyCalendarTester {
 		}
 	}
 
+	/**
+	 * Option to go to a specific date and view events on that date.
+	 * 
+	 * @param calendar: MyCalendar instance
+	 * @param scanner:  Scanner for user input
+	 */
 	private static void goToOption(MyCalendar calendar, Scanner scanner) {
 		System.out.println("Enter the date (MM/DD/YYYY): ");
 		String dateStr = scanner.nextLine();
@@ -175,10 +245,22 @@ public class MyCalendarTester {
 		showDayView(calendar, date, scanner);
 	}
 
+	/**
+	 * Prompting the user to select the event deletion type.
+	 * 
+	 * @param calendar: MyCalendar instance
+	 * @param scanner:  Scanner for user input
+	 */
 	private static void deleteEvent(MyCalendar calendar, Scanner scanner) {
 		calendar.deleteEvent(scanner);
 	}
 
+	/**
+	 * Displays the current month calendar, highlighting today's date with brackets.
+	 * This is the extra method (I programmed it here in case need it in the future)
+	 * 
+	 * @param today: the today's date
+	 */
 	public static void displayMonthCalendar(LocalDate today) {
 		LocalDate date = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
 		System.out.println(date.getMonth().getDisplayName(TextStyle.FULL, Locale.US) + " " + date.getYear());

@@ -16,13 +16,33 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
+/**
+ * MyCalendar class load, save, store, display, and manage events. It supports
+ * one-time and recurring events, allowing users to add, delete, view, and save
+ * events.
+ * 
+ * Programmed by: Nathan Dinh
+ * 
+ * Date: 09/13/2024
+ */
+
 public class MyCalendar {
+
+	// Declare events list variable
 	private List<Event> events;
 
+	/**
+	 * Default constructor with empty Array List
+	 */
 	public MyCalendar() {
 		this.events = new ArrayList<>();
 	}
 
+	/**
+	 * Loads events from a file and save data to events array.
+	 * 
+	 * @param filename: the file path type String
+	 */
 	public void loadEvents(String filename) {
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(filename));
@@ -82,6 +102,13 @@ public class MyCalendar {
 		}
 	}
 
+	/**
+	 * Parses a string of characters representing days of the week and converts them
+	 * into DayOfWeek.
+	 * 
+	 * @param days: String showing the days (example: "MW" for Monday and Wednesday)
+	 * @return an array of DayOfWeek corresponding to the days
+	 */
 	private DayOfWeek[] parseDays(String days) {
 		DayOfWeek[] dayArray = new DayOfWeek[days.length()];
 
@@ -117,15 +144,38 @@ public class MyCalendar {
 		return dayArray;
 	}
 
+	/**
+	 * Checks if the event is recurring based on the presence of day abbreviations
+	 * (S, M, T, W, R, F, A) at the beginning of the event details.
+	 * 
+	 * @param details: the event details string
+	 * @return true if the event is recurring, false otherwise
+	 */
 	private boolean isRecurringEvent(String details) {
-		// Check if the second line starts with day abbreviations (SMTWRFA)
-		return details.matches("^[SMTWRFA]+.*");
+		// Check if the first character(s) are valid day abbreviations
+		if (details == null || details.isEmpty()) {
+			return false;
+		}
+
+		char firstLetter = details.charAt(0);
+		return (firstLetter == 'S' || firstLetter == 'M' || firstLetter == 'T' || firstLetter == 'W'
+				|| firstLetter == 'R' || firstLetter == 'F' || firstLetter == 'A');
 	}
 
+	/**
+	 * Adds a new event to the calendar.
+	 * 
+	 * @param event: the event to be added
+	 */
 	public void addEvent(Event event) {
 		events.add(event);
 	}
 
+	/**
+	 * Deletes an event from the calendar based on user input.
+	 * 
+	 * @param scanner: Scanner object to receive user input
+	 */
 	public void deleteEvent(Scanner scanner) {
 		System.out.println("[S]elected  [A]ll  [Dr]ecurring");
 		String option = scanner.nextLine().trim().toUpperCase();
@@ -147,7 +197,11 @@ public class MyCalendar {
 		}
 	}
 
-	// Delete a specific one-time event by date and name
+	/**
+	 * Deletes a specific one-time event based on date and name.
+	 * 
+	 * @param scanner: Scanner object to receive user input
+	 */
 	private void deleteSelectedEvent(Scanner scanner) {
 		System.out.println("Enter the date [MM/DD/YYYY]:");
 		String dateStr = scanner.nextLine();
@@ -186,7 +240,11 @@ public class MyCalendar {
 		}
 	}
 
-	// Delete all one-time events on a specific date
+	/**
+	 * Deletes all one-time events on a specific date.
+	 * 
+	 * @param scanner: Scanner object to receive user input
+	 */
 	private void deleteAllEventsOnDate(Scanner scanner) {
 		System.out.println("Enter the date [MM/DD/YYYY]:");
 		String dateStr = scanner.nextLine();
@@ -209,7 +267,11 @@ public class MyCalendar {
 		}
 	}
 
-	// Delete a recurring event by name
+	/**
+	 * Deletes a recurring event based on its name.
+	 * 
+	 * @param scanner: Scanner object to receive user input
+	 */
 	private void deleteRecurringEvent(Scanner scanner) {
 		System.out.println("Enter the name of the recurring event to delete:");
 		String eventName = scanner.nextLine().trim();
@@ -231,6 +293,13 @@ public class MyCalendar {
 		}
 	}
 
+	/**
+	 * Get all events on a specific date and return a list of all events that occur
+	 * on the specified date.
+	 *
+	 * @param date: date for which events should be retrieved
+	 * @return a list of events that occur on the specified date
+	 */
 	public List<Event> getEventsOnDate(LocalDate date) {
 		List<Event> eventsOnDate = new ArrayList<>();
 
@@ -259,6 +328,12 @@ public class MyCalendar {
 		return eventsOnDate;
 	}
 
+	/**
+	 * Displays the month view for the given date, showing all days of the month and
+	 * highlighting the current day and any days that have events.
+	 *
+	 * @param date: date representing the month to display
+	 */
 	public void showMonth(LocalDate date) {
 
 		// Get today's date
@@ -307,6 +382,12 @@ public class MyCalendar {
 		System.out.println(); // Final newline after the month
 	}
 
+	/**
+	 * Checks if there are any events scheduled on the given date.
+	 * 
+	 * @param date: date to check for events
+	 * @return true if there are events scheduled on the date, false otherwise
+	 */
 	private boolean hasEventsOnDate(LocalDate date) {
 		// Check if there are any events scheduled on the given date
 		for (Event event : events) {
@@ -323,6 +404,13 @@ public class MyCalendar {
 		return false;
 	}
 
+	/**
+	 * Checks if the given recurring event occurs on the specified date.
+	 * 
+	 * @param event: recurring event to check
+	 * @param date:  date to check for the event
+	 * @return true if the event occurs on the date, false otherwise
+	 */
 	private boolean isEventOnDate(Event event, LocalDate date) {
 		// Check if the given date falls within the recurring event's range
 		if (!date.isBefore(event.getStartDate()) && !date.isAfter(event.getEndDate())) {
@@ -337,6 +425,10 @@ public class MyCalendar {
 		return false;
 	}
 
+	/**
+	 * Displays all events in the calendar, both one-time and recurring. One-time
+	 * events are displayed first, followed by recurring events.
+	 */
 	public void showAllEvents() {
 		System.out.println("\nALL EVENTS:");
 
@@ -375,7 +467,11 @@ public class MyCalendar {
 		System.out.println();
 	}
 
-	// Save all events to output.txt
+	/**
+	 * Saves all events to output file.
+	 * 
+	 * @param filename: the file path to save the events to
+	 */
 	public void saveEventsToFile(String filename) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
@@ -390,7 +486,14 @@ public class MyCalendar {
 		}
 	}
 
-	// Format event for output file
+	/**
+	 * Formats an event for writing to a file. Recurring events are formatted with
+	 * day abbreviations, while one-time events are written with their date and
+	 * time.
+	 * 
+	 * @param event: event to format
+	 * @return the String of formatted event
+	 */
 	private String formatEventForFile(Event event) {
 		StringBuilder sb = new StringBuilder();
 
