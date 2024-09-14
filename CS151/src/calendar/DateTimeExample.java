@@ -40,13 +40,7 @@ public class DateTimeExample {
 		LocalDate x = LocalDate.of(c.getYear(), c.getMonth(), 1);
 		System.out.println(x.getDayOfWeek() + " is the day of " + c.getMonth() + " 1."); // enum value as it is
 		System.out.println(
-				x.getDayOfWeek().getValue() + " is an integer value corresponding " + " to " + x.getDayOfWeek()); // int
-																													// value
-																													// corresponding
-																													// to
-																													// the
-																													// enum
-																													// value
+				x.getDayOfWeek().getValue() + " is an integer value corresponding " + " to " + x.getDayOfWeek());
 
 	}
 

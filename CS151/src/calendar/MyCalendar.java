@@ -1,5 +1,8 @@
 package calendar;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
@@ -80,26 +83,38 @@ public class MyCalendar {
 	}
 
 	private DayOfWeek[] parseDays(String days) {
-		return days.chars().mapToObj(c -> {
+		DayOfWeek[] dayArray = new DayOfWeek[days.length()];
+
+		for (int i = 0; i < days.length(); i++) {
+			char c = days.charAt(i);
 			switch (c) {
 			case 'M':
-				return DayOfWeek.MONDAY;
+				dayArray[i] = DayOfWeek.MONDAY;
+				break;
 			case 'T':
-				return DayOfWeek.TUESDAY;
+				dayArray[i] = DayOfWeek.TUESDAY;
+				break;
 			case 'W':
-				return DayOfWeek.WEDNESDAY;
+				dayArray[i] = DayOfWeek.WEDNESDAY;
+				break;
 			case 'R':
-				return DayOfWeek.THURSDAY;
+				dayArray[i] = DayOfWeek.THURSDAY;
+				break;
 			case 'F':
-				return DayOfWeek.FRIDAY;
+				dayArray[i] = DayOfWeek.FRIDAY;
+				break;
 			case 'S':
-				return DayOfWeek.SATURDAY;
+				dayArray[i] = DayOfWeek.SATURDAY;
+				break;
 			case 'U':
-				return DayOfWeek.SUNDAY;
+				dayArray[i] = DayOfWeek.SUNDAY;
+				break;
 			default:
-				throw new IllegalArgumentException("Invalid day character: " + (char) c);
+				throw new IllegalArgumentException("Invalid day character: " + c);
 			}
-		}).toArray(DayOfWeek[]::new);
+		}
+
+		return dayArray;
 	}
 
 	private boolean isRecurringEvent(String details) {
@@ -107,16 +122,8 @@ public class MyCalendar {
 		return details.matches("^[SMTWRFA]+.*");
 	}
 
-	public void saveEvents(String filename) {
-
-	}
-
 	public void addEvent(Event event) {
 		events.add(event);
-	}
-
-	public void deleteEvent(String name, LocalDate date) {
-
 	}
 
 	public void deleteEvent(Scanner scanner) {
@@ -140,7 +147,7 @@ public class MyCalendar {
 		}
 	}
 
-	// 1. Delete a specific one-time event by date and name
+	// Delete a specific one-time event by date and name
 	private void deleteSelectedEvent(Scanner scanner) {
 		System.out.println("Enter the date [MM/DD/YYYY]:");
 		String dateStr = scanner.nextLine();
@@ -179,7 +186,7 @@ public class MyCalendar {
 		}
 	}
 
-	// 2. Delete all one-time events on a specific date
+	// Delete all one-time events on a specific date
 	private void deleteAllEventsOnDate(Scanner scanner) {
 		System.out.println("Enter the date [MM/DD/YYYY]:");
 		String dateStr = scanner.nextLine();
@@ -202,7 +209,7 @@ public class MyCalendar {
 		}
 	}
 
-	// 3. Delete a recurring event by name
+	// Delete a recurring event by name
 	private void deleteRecurringEvent(Scanner scanner) {
 		System.out.println("Enter the name of the recurring event to delete:");
 		String eventName = scanner.nextLine().trim();
@@ -331,7 +338,7 @@ public class MyCalendar {
 	}
 
 	public void showAllEvents() {
-		System.out.println("ALL EVENTS:");
+		System.out.println("\nALL EVENTS:");
 
 		System.out.println("\nONE-TIME EVENTS:");
 		for (Event event : events) {
@@ -365,5 +372,46 @@ public class MyCalendar {
 						+ " to " + endDate + ")");
 			}
 		}
+		System.out.println();
+	}
+
+	// Save all events to output.txt
+	public void saveEventsToFile(String filename) {
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+			for (Event event : events) {
+				writer.write(formatEventForFile(event));
+				writer.newLine();
+			}
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("An error occurred while saving events to file.");
+			e.printStackTrace();
+		}
+	}
+
+	// Format event for output file
+	private String formatEventForFile(Event event) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(event.getName()).append("\n");
+
+		if (event.isRecurring()) {
+			// Format recurring event
+			StringBuilder recurringDaysString = new StringBuilder();
+			for (DayOfWeek day : event.getRecurringDays()) {
+				recurringDaysString.append(day.getDisplayName(TextStyle.NARROW, Locale.US));
+			}
+			sb.append(recurringDaysString.toString()).append(" ").append(event.getTimeInterval().getStartTime())
+					.append(" ").append(event.getTimeInterval().getEndTime()).append(" ")
+					.append(event.getTimeInterval().getStartDate()).append(" ")
+					.append(event.getTimeInterval().getEndDate());
+		} else {
+			// Format one-time event
+			sb.append(event.getTimeInterval().getStartDate()).append(" ").append(event.getTimeInterval().getStartTime())
+					.append(" ").append(event.getTimeInterval().getEndTime());
+		}
+
+		return sb.toString();
 	}
 }

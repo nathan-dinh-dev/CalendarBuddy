@@ -20,10 +20,10 @@ public class MyCalendarTester {
 		MyCalendar calendar = new MyCalendar();
 
 		// Load calendar
-		calendar.loadEvents("C:\\Users\\nghia\\git\\CalendarBuddy\\CS151\\src\\calendar\\sample_events.txt");
+		calendar.loadEvents("C:\\Users\\nghia\\git\\CalendarBuddy\\CS151\\src\\calendar\\events.txt");
 
 		// Print out string indicates loading successfully
-		System.out.println("Loading is done!");
+		System.out.println("\nLoading is done!\n");
 
 		// Print out all events
 //		calendar.showAllEvents();
@@ -53,7 +53,8 @@ public class MyCalendarTester {
 				deleteEvent(calendar, scanner);
 				break;
 			case "Q":
-				System.out.println("Goodbye!");
+				calendar.saveEventsToFile("C:\\Users\\nghia\\git\\CalendarBuddy\\CS151\\src\\calendar\\output.txt");
+				System.out.println("\nGood Bye!");
 				isRunning = false;
 				break;
 			default:
