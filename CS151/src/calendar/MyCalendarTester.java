@@ -222,9 +222,28 @@ public class MyCalendarTester {
 			LocalTime endTime = LocalTime.parse(endTimeStr);
 
 			TimeInterval timeInterval = new TimeInterval(date, startTime, date, endTime);
-			Event newEvent = new Event(name, timeInterval);
-			calendar.addEvent(newEvent);
-			System.out.println("Event created successfully.");
+
+			// Check for conflicts with existing events on the same date
+			boolean isConflicted = false;
+			List<Event> eventsOnDate = calendar.getEventsOnDate(date);
+			for (Event existingEvent : eventsOnDate) {
+				if (existingEvent.getTimeInterval().overlaps(timeInterval)) {
+					isConflicted = true;
+					System.out.println("Time conflict detected with event: " + existingEvent.getName() + " ("
+							+ existingEvent.getTimeInterval().getStartTime() + " - "
+							+ existingEvent.getTimeInterval().getEndTime() + ")");
+					break;
+				}
+			}
+
+			// If no conflicts, create and add the event
+			if (!isConflicted) {
+				Event newEvent = new Event(name, timeInterval);
+				calendar.addEvent(newEvent);
+				System.out.println("Event created successfully.");
+			} else {
+				System.out.println("Please enter a different time that doesn't conflict.");
+			}
 		} catch (Exception e) {
 			System.out.println("Invalid input. Please enter the correct date and time format.");
 		}
