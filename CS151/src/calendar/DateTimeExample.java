@@ -23,6 +23,7 @@ public class DateTimeExample {
 			}
 		}
 		System.out.println("Bye!");
+		sc.close();
 	}
 
 	public static void printCalendar(LocalDate c) {
